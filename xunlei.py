@@ -67,4 +67,6 @@ class BtTask(Task):
     def __init__(self):
         super(BtTask, self).__init()
         
-        
+    def download(self):
+        pass
+
