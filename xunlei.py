@@ -7,35 +7,54 @@ Created on 2012-6-15
 '''
 
 import httplib
-from cookielib import CookieJar
+from cookielib import CookieJar,FileCookieJar,LWPCookieJar
+import urllib2
+import urllib
+from urllib2 import Request,HTTPCookieProcessor
+import time
 
 #开启调试模式
 httplib.HTTPSConnection.debuglevel=1
 
+def get_cachetime():
+    return int(time.time() * 1000)
 class Xunlei:
     def __init__(self,username=None,password=None,cookiepath=None):
         '''初始化信息数据，用户密码，已存在COOKIE'''
-        self.username = username
-        self.password = password
         self.cookiepath = cookiepath
         if self.cookiepath is not None:
-            self.cookie = CookieJar(self.cookiepath)
+            self.load_cookie(self.cookiepath)
+            self.opener = urllib2.build_opener( 
+                    HTTPCookieProcessor(self.cookie))
         self.domain = 'xunlei.com' #设置离线COOKIE域
         
-        pass
-    def login(self,username=None,password=None,cookiepath=None):
+    def login(self,username,password,cookiepath=None):
         '''连接登录迅雷离线，并且吧登录信息保存在COOKIE里面'''
+        if cookiepath is not None:
+            self.cookiepath = cookiepath
+            self.cookie = self.load_cookie(cookiepath)
+        else:
+            self.cookie = CookieJar()
+        self.opener = urllib2.build_opener( 
+                    HTTPCookieProcessor(self.cookie))
+        check_url = 'http://login.xunlei.com/check'
+        postdata = {'u':username,'cachetime':get_cachetime()}
+        postdata = urllib.urlencode(postdata)
+        check_url += '?'+postdata
+        login_page = self.opener.open(check_url).read()
+        
         pass
     def logout(self):
         ''' 移除登录的COOKIE数据'''
         pass
-    def get_cookie(self,domain,key):
+    def get_cookie(self,key):
         '''获取COOKIE里面的属性'''
+        self.cookie._cookies[self.domain][key].val
         pass
     def save_cookie(self):
         '''保存COOKIE到硬盘'''
         pass
-    def load_cookie(self):
+    def load_cookie(self,cookiepath):
         '''载入已存在的COOKIE'''
         pass
     def urlopen(self,url,**kwargs):
@@ -94,4 +113,6 @@ class BtTask(Task):
         pass
 
 if __name__ == '__main__':
+    xl = Xunlei()
+    xl.login('firefoxmmx', 'missdark')
     pass
