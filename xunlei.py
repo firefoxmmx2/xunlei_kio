@@ -12,6 +12,7 @@ import urllib2
 import urllib
 from urllib2 import Request,HTTPCookieProcessor
 import time
+from hashlib import md5
 
 #开启调试模式
 httplib.HTTPSConnection.debuglevel=1
@@ -42,21 +43,42 @@ class Xunlei:
         postdata = urllib.urlencode(postdata)
         check_url += '?'+postdata
         login_page = self.opener.open(check_url).read()
+        check_result_info =  self.get_cookie('check_result');
+        check_result_code = \
+            check_result_info.split(':')[1]
+        login_url = 'http://login.xunlei.com/sec2login/'
+#        login_enable    0
+#        login_hour    720
+#        p    5d0f7f4e758df9e366267f329d0a7e9e
+#        u    firefoxmmx
+#        verifycode    !ES4
+        md5_maker = md5()
+        md5_maker.update(password)
         
-        pass
+        postdata = {'u':username,
+                    'p':md5_maker.hexdigest(),
+                    'login_hour':0,
+                    'login_hour':720,
+                    'verifycode':check_result_code}
+        postdata = urllib.urlencode(postdata)
+        login_page = self.opener.open(login_url, postdata).read()
+        print login_page
     def logout(self):
         ''' 移除登录的COOKIE数据'''
         pass
     def get_cookie(self,key):
         '''获取COOKIE里面的属性'''
-        self.cookie._cookies[self.domain][key].val
-        pass
+        if self.cookie.has_nonstandard_attr(key):
+            return self.cookie._cookies[self.domain][key].value
+        else:
+            return None
     def save_cookie(self):
         '''保存COOKIE到硬盘'''
         pass
     def load_cookie(self,cookiepath):
         '''载入已存在的COOKIE'''
-        pass
+        self.cookie = FileCookieJar(cookiepath)
+        self.cookie.load()
     def urlopen(self,url,**kwargs):
         '''打开连接，过滤掉自己不需要的信息'''
         pass
