@@ -27,7 +27,7 @@ class Xunlei:
             self.load_cookie(self.cookiepath)
             self.opener = urllib2.build_opener( 
                     HTTPCookieProcessor(self.cookie))
-        self.domain = 'xunlei.com' #设置离线COOKIE域
+        self.domain = '.xunlei.com' #设置离线COOKIE域
         
     def login(self,username,password,cookiepath=None):
         '''连接登录迅雷离线，并且吧登录信息保存在COOKIE里面'''
@@ -39,7 +39,8 @@ class Xunlei:
         self.opener = urllib2.build_opener( 
                     HTTPCookieProcessor(self.cookie))
         check_url = 'http://login.xunlei.com/check'
-        postdata = {'u':username,'cachetime':get_cachetime()}
+        cachetime = get_cachetime()
+        postdata = {'u':username,'cachetime':cachetime}
         postdata = urllib.urlencode(postdata)
         check_url += '?'+postdata
         login_page = self.opener.open(check_url).read()
@@ -47,30 +48,35 @@ class Xunlei:
         check_result_code = \
             check_result_info.split(':')[1]
         login_url = 'http://login.xunlei.com/sec2login/'
+        
 #        login_enable    0
 #        login_hour    720
 #        p    5d0f7f4e758df9e366267f329d0a7e9e
 #        u    firefoxmmx
 #        verifycode    !ES4
-        md5_maker = md5()
-        md5_maker.update(password)
         
         postdata = {'u':username,
-                    'p':md5_maker.hexdigest(),
-                    'login_hour':0,
+                    'p':md5(md5(md5(password).hexdigest()).hexdigest()
+                            +check_result_code.upper())
+                            .hexdigest(),
+                    'login_hour':1,
                     'login_hour':720,
                     'verifycode':check_result_code}
         postdata = urllib.urlencode(postdata)
         login_page = self.opener.open(login_url, postdata).read()
-        print login_page
+        blogresult = self.get_cookie('blogresult')
+        if blogresult == '0':
+            return True
+        else:
+            return False
     def logout(self):
         ''' 移除登录的COOKIE数据'''
         pass
     def get_cookie(self,key):
         '''获取COOKIE里面的属性'''
-        if self.cookie.has_nonstandard_attr(key):
-            return self.cookie._cookies[self.domain][key].value
-        else:
+        try:
+            return self.cookie._cookies[self.domain]['/'][key].value
+        except Exception:
             return None
     def save_cookie(self):
         '''保存COOKIE到硬盘'''
