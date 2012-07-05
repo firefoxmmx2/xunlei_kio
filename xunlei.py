@@ -6,13 +6,13 @@ Created on 2012-6-15
 @author: hooxin
 '''
 
-import httplib
-from cookielib import CookieJar,FileCookieJar,LWPCookieJar
-import urllib2
-import urllib
-from urllib2 import Request,HTTPCookieProcessor
-import time
+from cookielib import CookieJar, FileCookieJar, LWPCookieJar,Cookie
 from hashlib import md5
+from urllib2 import Request, HTTPCookieProcessor
+import httplib
+import time
+import urllib
+import urllib2
 
 #开启调试模式
 httplib.HTTPSConnection.debuglevel=1
@@ -71,9 +71,24 @@ class Xunlei:
             return True
         else:
             return False
+        
     def logout(self):
         ''' 移除登录的COOKIE数据'''
-        pass
+        logout_url = 'http://login.xunlei.com/unregister?sessionid=' \
+        +self.get_cookie(self.rootdomain, 'sessionid')
+        vip_ckeys = ["vip_isvip","lx_sessionid","vip_level","lx_login",
+                 "dl_enable","in_xl","ucid","lx_login_u","rw_list_open"]
+        root_ckeys1 = ["sessionid","usrname","nickname","usernewno",
+                  "lsessionid","luserid","userid","vip_paytype"]
+        for i in vip_ckeys:
+            self.set_cookie(self.vipdomain , i, '')
+        for i in root_ckeys1:
+            self.set_cookie(self.rootdomain, i, '')
+        self.set_cookie(self.vipdomain,'lx_nf_all',
+                        'page_check_all=commtask&fltask_all_guoqi=0&\
+        class_check=0&page_check=task&fl_page_id=0&class_check_new=0')
+        self.set_cookie(self.rootdomain,'menu_isopen',0)
+        
     def get_cookie(self,domain,key):
         '''获取COOKIE里面的属性'''
         try:
@@ -83,6 +98,26 @@ class Xunlei:
     def save_cookie(self):
         '''保存COOKIE到硬盘'''
         pass
+    def set_cookie(self,domain,key,value):
+        '''设置cookie属性的值'''
+        cookie_ = Cookie(version=0, 
+                                name=key, 
+                                value=value,
+                                discard=True,
+                                domain=domain,
+                                domain_initial_dot=False,
+                                domain_specified=True,
+                                expires=None,
+                                path="/",
+                                path_specified=False,
+                                port=None,
+                                port_specified=False,
+                                secure=False,
+                                comment=None,
+                                comment_url=None,
+                                rest={},)
+        
+        self.cookie.set_cookie(cookie_)
     def load_cookie(self,cookiepath):
         '''载入已存在的COOKIE'''
         self.cookie = FileCookieJar(cookiepath)
@@ -144,4 +179,12 @@ class BtTask(Task):
 
 if __name__ == '__main__':
     xl = Xunlei()
-    pass
+    import os
+    account_file = open(os.environ['HOME']+os.sep+'.xunlei','r')
+    username = account_file.readline()
+    password = account_file.readline()
+    account_file.close()
+    xl.login(username, password)
+    print (xl.get_cookie(xl.rootdomain, 'sessionId'))
+    xl.set_cookie(xl.rootdomain, 'sessionId', 'aa')
+    print (xl.get_cookie(xl.rootdomain, 'sessionId'))
