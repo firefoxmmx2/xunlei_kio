@@ -27,7 +27,9 @@ class Xunlei:
             self.load_cookie(self.cookiepath)
             self.opener = urllib2.build_opener( 
                     HTTPCookieProcessor(self.cookie))
-        self.domain = '.xunlei.com' #设置离线COOKIE域
+        self.rootdomain = '.xunlei.com' #设置离线COOKIE ROOT域
+        self.vipdomain = '.vip.xunlei.com' #迅雷vip COOKE 域
+        
         
     def login(self,username,password,cookiepath=None):
         '''连接登录迅雷离线，并且吧登录信息保存在COOKIE里面'''
@@ -44,7 +46,7 @@ class Xunlei:
         postdata = urllib.urlencode(postdata)
         check_url += '?'+postdata
         login_page = self.opener.open(check_url).read()
-        check_result_info =  self.get_cookie('check_result');
+        check_result_info =  self.get_cookie(self.rootdomain,'check_result');
         check_result_code = \
             check_result_info.split(':')[1]
         login_url = 'http://login.xunlei.com/sec2login/'
@@ -64,7 +66,7 @@ class Xunlei:
                     'verifycode':check_result_code}
         postdata = urllib.urlencode(postdata)
         login_page = self.opener.open(login_url, postdata).read()
-        blogresult = self.get_cookie('blogresult')
+        blogresult = self.get_cookie(self.rootdomain,'blogresult')
         if blogresult == '0':
             return True
         else:
@@ -72,10 +74,10 @@ class Xunlei:
     def logout(self):
         ''' 移除登录的COOKIE数据'''
         pass
-    def get_cookie(self,key):
+    def get_cookie(self,domain,key):
         '''获取COOKIE里面的属性'''
         try:
-            return self.cookie._cookies[self.domain]['/'][key].value
+            return self.cookie._cookies[domain]['/'][key].value
         except Exception:
             return None
     def save_cookie(self):
@@ -142,5 +144,4 @@ class BtTask(Task):
 
 if __name__ == '__main__':
     xl = Xunlei()
-    xl.login('firefoxmmx', 'missdark')
     pass
