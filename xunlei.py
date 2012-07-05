@@ -136,5 +136,4 @@ class BtTask(Task):
 
 if __name__ == '__main__':
     xl = Xunlei()
-    xl.login('firefoxmmx', 'missdark')
     pass
