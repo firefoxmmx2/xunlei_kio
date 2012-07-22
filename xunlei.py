@@ -62,6 +62,7 @@ class Xunlei:
 #        p    5d0f7f4e758df9e366267f329d0a7e9e
 #        u    firefoxmmx
 #        verifycode    !ES4
+
         
         postdata = {'u':username,
                     'p':md5(md5(md5(password).hexdigest()).hexdigest()
