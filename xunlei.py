@@ -142,50 +142,50 @@ class Xunlei:
     def urlread(self):
         '''读取需要的部分'''
         pass
-    def add_task(self,task):
-        '''向离线空间添加任务'''
-        pass
-    def remove_task(self,task):
-        '''移除离线的任务信息 '''
-        pass
-    def update_task(self,task):
-        ''' 修改离线任务的内容'''
-        pass
-    def get_task_list(self):
-        ''' 通过连接打开,通过__parse_task解析HTML元素 \
-        返回一个任务列表'''
-        pass
-    def __parse_task(self,html):
-        '''解析HTML元素，返回TASK列表'''
-        pass
-    
-    
+	def add_task(self,task):
+		'''向离线空间添加任务'''
+		pass
+	def remove_task(self,task):
+		'''移除离线的任务信息 '''
+		pass
+	def update_task(self,task):
+		''' 修改离线任务的内容'''
+		pass
+	def get_task_list(self):
+		''' 通过连接打开,通过__parse_task解析HTML元素 \
+				返回一个任务列表'''
+		pass
+	def __parse_task(self,html):
+		'''解析HTML元素，返回TASK列表'''
+		pass
+
+
 class Task:
-    def __init__(self):
-        self.id=''
-        self.name=''
-        self.origin_link=''
-        self.size=0
-        self.dl_link=''
-        self.dcid=''
-        self.durl=''
-        self.furl=''
-        self.dstatus=''
-        self.dtasktype=''
-        self.ref_url=''
-        self.verity=''
-        self.ifvod=''
-        self.vodurl=''
-        self.openformat=''
-        self.progress = ''
-        self.speed=''
-        
-    def download(self):
-        pass
-    
+	def __init__(self):
+		self.id=''
+		self.name=''
+		self.origin_link=''
+		self.size=0
+		self.dl_link=''
+		self.dcid=''
+		self.durl=''
+		self.furl=''
+		self.dstatus=''
+		self.dtasktype=''
+		self.ref_url=''
+		self.verity=''
+		self.ifvod=''
+		self.vodurl=''
+		self.openformat=''
+		self.progress = ''
+		self.speed=''
+
+	def download(self):
+		pass
+
 
 class BtTask(Task):
-    def __init__(self):
+	def __init__(self):
         super(BtTask, self).__init()
         
     def download(self):
